@@ -1,0 +1,35 @@
+name: "linting-tool-scan"
+
+on:
+  push:
+    branches: [githubcicd]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci --force
+
+      - name: Install JSHint
+        run: npm install -g jshint
+
+      - name: Change script permission
+        run: chmod +x scripts/jshint-script.sh
+
+      - name: Run scan with JSHint
+        run: scripts/jshint-script.sh
+
+      - name: Archive lint report
+        uses: actions/upload-artifact@v4
+        with:
+          name: linting-tool-report
+          path: JSHint-report
